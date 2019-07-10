@@ -1,0 +1,8 @@
+{
+	"pc":
+	{
+		"storagedevice"  :"sdb",
+		"storagepartition" : "1",
+		"networkdevice" : "enp0s3"
+	}
+}

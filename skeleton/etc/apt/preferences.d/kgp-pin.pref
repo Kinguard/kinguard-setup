@@ -1,0 +1,7 @@
+Package: *
+Pin: release o=Debian
+Pin-Priority: 500
+
+Package: *
+Pin: release o=Kinguard Project
+Pin-Priority: 999

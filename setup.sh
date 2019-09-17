@@ -17,7 +17,7 @@ apt -y install kinguard
 
 # Cleanup
 rm /etc/apt/sources.list.d/kgp-tmp.list
-
+rm /etc/apt/preferences.d/kgp-pin-installer.pref
 touch /etc/opi/firstboot
 
 /usr/share/opi-postsetup/kgp-postsetup

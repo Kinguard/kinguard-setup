@@ -1,6 +1,6 @@
 Package: *
 Pin: release o=Debian
-Pin-Priority: 500
+Pin-Priority: 250
 
 Package: *
 Pin: release o=Kinguard Project

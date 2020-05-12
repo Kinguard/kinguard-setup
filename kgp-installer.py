@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 
 from functools import partial
+import subprocess
+import threading
 import pathlib
 import urwid
+import time
 import json
 import os
 
@@ -11,8 +14,6 @@ from kgpmodules import disks, misc, network as net
 from kgpmodules.widgets import *
 
 basedir = str(pathlib.Path(__file__).parent.absolute())
-
-print("Basedir is: "+basedir)
 
 palette = [
 	('banner', 'black', 'light gray'),
@@ -54,17 +55,23 @@ class App:
 			print("No suitable storage device found!")
 			exit(1)
 	
-	
+		self.thread = None
+
 		self.selwin = SelectWindow(
 			netifs, dsks, 
 			self._showconfirm, 
 			self._terminate)
-		self.startwin = StartWindow(self._createconfig, self._showselect)
+
+		self.startwin = StartWindow(self._showwait, self._showselect)
+		self.wait = WaitWindow("Please wait, install in progress")
+		self.info = InfoWindow("Installation done. System needs to reboot to complete.", "Reboot", self._terminate) 
 	
 		self.loop = urwid.MainLoop(self.selwin, palette, unhandled_input=exit_on_q)
 
 	def run(self):
 		self.loop.run()
+		if self.thread:
+			self.thread.join()
 	
 	def _showconfirm(self):
 		self.net = self.selwin.getNetif()
@@ -77,11 +84,21 @@ class App:
 
 	def _showselect(self):
 		self.loop.widget = self.selwin
-	
+
+	def _showreboot(self):
+		self.loop.widget = self.info
+
+	def _showwait(self):
+		#print("Wait")
+		self.loop.widget = self.wait
+		self.thread = threading.Thread(target=self._dosetup)
+		self.thread.start()
+		#print("Done")
+
 	def _terminate(self):
 		raise urwid.ExitMainLoop()
 
-	def _createconfig(self):
+	def _dosetup(self):
 		cfg = {}
 		cfg["default"] = {
 			"storagedevice": self.dsk, 
@@ -90,6 +107,11 @@ class App:
 		}
 
 		print(json.dumps(cfg, indent=4))
+		op = subprocess.check_output([basedir+"/scripts/test.sh"]).decode("utf-8")
+		#print("Output was: "+op)
+		time.sleep(5)
+		self._showreboot()
+		self.loop.draw_screen()
 
 if __name__ == "__main__":
 

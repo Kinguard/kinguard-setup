@@ -56,6 +56,29 @@ class BaseWizard(BaseWindow):
 		if self.prevcallback:
 			self.prevcallback()	
 
+class InfoWindow(BaseWindow):
+
+	def __init__(self, text, label, callback):
+
+		self.press = callback
+		info = urwid.Filler(urwid.Text(text))
+		button = urwid.Filler(urwid.Padding(urwid.Button(label, self._onpress), "center", "pack"))
+		content = urwid.Pile([info, button])
+		BaseWindow.__init__(self, content)
+
+
+	def _onpress(self, button):
+		if self.press:
+			self.press()
+
+class WaitWindow(BaseWindow):
+
+	def __init__(self, text):
+
+		info = urwid.Filler(urwid.Text(text))
+
+		BaseWindow.__init__(self, info)
+
 class SelectWindow(BaseWizard):
 
 

@@ -4,10 +4,14 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 BASE="$( realpath $DIR/..)"
 
+
+exec 2> $BASE/kgp-error.log
+exec > $BASE/kgp-install.log
+
 export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
 export LC_ALL=C LANGUAGE=C LANG=C
 
-cp -a "${BASE}/skeleton/*" /
+cp -a ${BASE}/skeleton/* /
 
 dpkg -i "${BASE}/data/kinguard-keyring_1.0_all.deb"
 

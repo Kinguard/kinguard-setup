@@ -106,10 +106,11 @@ class App:
 			"networkdevice" : self.net
 		}
 
-		print(json.dumps(cfg, indent=4))
-		op = subprocess.check_output([basedir+"/scripts/test.sh"]).decode("utf-8")
-		#print("Output was: "+op)
-		time.sleep(5)
+		f = open(basedir+"/skeleton/etc/opi/devicedb.json", 'w')
+		json.dump(cfg,f, indent=4)
+		f.close()
+
+		op = subprocess.check_output([basedir+"/scripts/setup.sh"]).decode("utf-8")
 		self._showreboot()
 		self.loop.draw_screen()
 

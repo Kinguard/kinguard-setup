@@ -61,7 +61,7 @@ class InfoWindow(BaseWindow):
 	def __init__(self, text, label, callback):
 
 		self.press = callback
-		info = urwid.Filler(urwid.Text(text))
+		info = urwid.Filler(urwid.Text(text,"center"))
 		button = urwid.Filler(urwid.Padding(urwid.Button(label, self._onpress), "center", "pack"))
 		content = urwid.Pile([info, button])
 		BaseWindow.__init__(self, content)
@@ -75,7 +75,7 @@ class WaitWindow(BaseWindow):
 
 	def __init__(self, text):
 
-		info = urwid.Filler(urwid.Text(text))
+		info = urwid.Filler(urwid.Text(text,"center"))
 
 		BaseWindow.__init__(self, info)
 

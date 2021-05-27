@@ -1,0 +1,3 @@
+python/makearchive
+python/tarexcludes
+python/.git*

@@ -1,8 +1,7 @@
 #! /bin/bash
 
-#! /bin/bash -x
 #
-# Typical usage: wget https://www.kinguardproject.org/download/dev/setup/kgp-setup.sh -qO - | sh
+# Typical usage: wget https://www.kinguardproject.org/download/dev/setup/kgp-setup.sh -qO - | bash
 #
 
 
@@ -26,6 +25,11 @@ DLS="${SEED} ${REPO} ${KEY}"
 SERVER="https://www.kinguardproject.org/download/dev/setup/"
 
 KGP_HOME="/tmp/kgp-setup/"
+
+# Redirect stderr to logfile
+exec 2>> /var/log/kgp-install.txt
+
+echo "Error log of kgp-setup start $(date)" >&2
 
 echo "Checking preconditions"
 
@@ -110,16 +114,15 @@ then
 	exit
 fi
 
-# Make sure apt is up2date
-apt-get -q -y update
 
-dpkg -l wget 2> /dev/null 1>&2 || apt-get install wget
+# We need wget to fetch rest of setup
+export DEBIAN_FRONTEND=noninteractive
+
+dpkg -l wget 2> /dev/null 1>&2 || apt-get -q -y update && apt-get -q -y install wget
 
 echo "Setting up temp storage"
 rm -rf ${KGP_HOME}
 mkdir -p ${KGP_HOME}
-
-exec 2>> /tmp/kgp-install.txt
 
 cd ${KGP_HOME}
 
@@ -142,7 +145,8 @@ cp ${KGP_HOME}${REPO} /etc/apt/sources.list.d/
 
 echo "Starting installation"
 
-export DEBIAN_FRONTEND=noninteractive
+# Update repos again with new sources
+apt-get -q -y update
 
 apt-get -q -y -o Dpkg::Options::="--force-confnew" install ${BOOTPKGS}
 
@@ -152,3 +156,5 @@ rm -f /etc/apt/sources.list.d/${REPO}
 rm -rf ${KGP_HOME}
 
 echo "Setup should be completed. Please reboot to finalize install"
+
+echo "Error log of kgp-setup end" >&2
